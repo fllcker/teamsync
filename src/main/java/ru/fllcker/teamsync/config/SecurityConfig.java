@@ -30,7 +30,8 @@ public class SecurityConfig {
                         authz -> authz
                                 .requestMatchers(
                                         "/api/auth/**",
-                                        "/swagger/**").permitAll()
+                                        "/swagger/**",
+                                        "/api/info/ping").permitAll()
                                 .anyRequest().authenticated()
                                 .and()
                                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)

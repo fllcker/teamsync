@@ -2,9 +2,7 @@ package ru.fllcker.teamsync.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -13,6 +11,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "messages")
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class Message {
     @Id
     @Column(name = "id")
@@ -22,6 +21,7 @@ public class Message {
     @Column(name = "created_at")
     private Instant createdAt = Instant.now();
 
+    @NonNull
     @Column(name = "value")
     private String value;
 
