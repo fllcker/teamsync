@@ -46,4 +46,17 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
     private List<Token> tokens;
+
+
+    @ManyToMany(mappedBy = "members")
+    @JsonBackReference
+    private List<Space> spaces;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonBackReference
+    private List<Space> ownedSpaces;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonBackReference
+    private List<Message> messages;
 }
