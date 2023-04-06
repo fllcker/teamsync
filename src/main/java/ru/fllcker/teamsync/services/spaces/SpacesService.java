@@ -11,6 +11,7 @@ import ru.fllcker.teamsync.models.User;
 import ru.fllcker.teamsync.repositories.ISpacesRepository;
 import ru.fllcker.teamsync.services.users.UsersService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -44,5 +45,11 @@ public class SpacesService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this space!");
 
         return space.getMembers();
+    }
+
+    public List<Space> findByMember(String accessEmail) {
+        User user = usersService.findByEmail(accessEmail);
+
+        return spacesRepository.findSpacesByMembersIn(Collections.singletonList(List.of(user)));
     }
 }

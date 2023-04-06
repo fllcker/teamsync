@@ -40,4 +40,12 @@ public class SpacesController {
         List<User> members = spacesService.findMembers(accessEmail, spaceId);
         return ResponseEntity.ok(members);
     }
+
+    @GetMapping("my")
+    public ResponseEntity<List<Space>> findUserSpaces() {
+        String accessEmail = authService.getAuthInfo().getEmail();
+
+        List<Space> spaces = spacesService.findByMember(accessEmail);
+        return ResponseEntity.ok(spaces);
+    }
 }
