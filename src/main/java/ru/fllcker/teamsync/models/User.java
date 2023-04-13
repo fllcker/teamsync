@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -12,7 +11,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "users")
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class User {
@@ -20,10 +19,6 @@ public class User {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Builder.Default
-    @Column(name = "created_at")
-    private Instant createdAt = Instant.now();
 
     @NonNull
     @Column(name = "email")
