@@ -5,24 +5,19 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "spaces")
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 public class Space {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "created_at")
-    private Instant createdAt = Instant.now();
-
     @NonNull
     @Column(name = "title")
     private String title;

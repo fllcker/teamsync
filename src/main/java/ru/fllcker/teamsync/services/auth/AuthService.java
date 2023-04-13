@@ -68,7 +68,7 @@ public class AuthService {
         Token token = tokensRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
 
-        if (!token.getToken().equals(refreshToken) || !token.getOwner().getEmail().equals(subject))
+        if (!token.getValue().equals(refreshToken) || !token.getOwner().getEmail().equals(subject))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
 

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 
 @Entity
 @Table(name = "tokens")
@@ -19,19 +18,16 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "created_at")
-    private Instant createdAt = Instant.now();
-
     @Column(name = "token")
-    private String token;
+    private String value;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @JsonManagedReference
     private User owner;
 
-    public Token(User user, String token) {
-        this.token = token;
+    public Token(User user, String value) {
+        this.value = value;
         this.owner = user;
     }
 }
