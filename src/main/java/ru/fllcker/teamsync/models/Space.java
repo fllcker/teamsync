@@ -38,4 +38,8 @@ public class Space {
     @OneToMany(mappedBy = "space")
     @JsonBackReference
     private List<Channel> channels;
+
+    @OneToMany(mappedBy = "space")
+    @JsonBackReference
+    private List<Category> categories;
 }

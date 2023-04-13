@@ -1,7 +1,6 @@
 package ru.fllcker.teamsync.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,10 +9,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "channels")
+@Table(name = "categories")
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
-public class Channel {
+public class Category {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +22,11 @@ public class Channel {
     @Column(name = "title")
     private String title;
 
+    @OneToMany(mappedBy = "category")
+    @JsonBackReference
+    private List<Channel> channels;
+
     @ManyToOne
     @JoinColumn(name = "space_id", referencedColumnName = "id")
-    @JsonManagedReference
     private Space space;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @JsonManagedReference
-    private Category category;
-
-    @OneToMany(mappedBy = "channel")
-    @JsonBackReference
-    private List<Message> messages;
-
 }

@@ -10,7 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.spaces.NewSpaceDto;
 import ru.fllcker.teamsync.models.Space;
 import ru.fllcker.teamsync.models.User;
-import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.spaces.SpacesService;
 
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("api/spaces")
 public class SpacesController {
-    private final AuthService authService;
     private final SpacesService spacesService;
 
     @PostMapping
@@ -27,25 +25,19 @@ public class SpacesController {
         if (bindingResult.hasErrors())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
 
-        String accessEmail = authService.getAuthInfo().getEmail();
-
-        Space space = spacesService.create(accessEmail, newSpaceDto);
+        Space space = spacesService.create(newSpaceDto);
         return ResponseEntity.ok(space);
     }
 
     @GetMapping("members/{spaceId}")
     public ResponseEntity<List<User>> findMembers(@PathVariable Long spaceId) {
-        String accessEmail = authService.getAuthInfo().getEmail();
-
-        List<User> members = spacesService.findMembers(accessEmail, spaceId);
+        List<User> members = spacesService.findMembers(spaceId);
         return ResponseEntity.ok(members);
     }
 
     @GetMapping("my")
     public ResponseEntity<List<Space>> findUserSpaces() {
-        String accessEmail = authService.getAuthInfo().getEmail();
-
-        List<Space> spaces = spacesService.findByMember(accessEmail);
+        List<Space> spaces = spacesService.findByMember();
         return ResponseEntity.ok(spaces);
     }
 }

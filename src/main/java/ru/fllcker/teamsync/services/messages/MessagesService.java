@@ -10,6 +10,7 @@ import ru.fllcker.teamsync.models.Channel;
 import ru.fllcker.teamsync.models.Message;
 import ru.fllcker.teamsync.models.User;
 import ru.fllcker.teamsync.repositories.IMessagesRepository;
+import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.channels.ChannelsService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
@@ -22,9 +23,10 @@ public class MessagesService {
     private final IMessagesRepository messagesRepository;
     private final UsersService usersService;
     private final ChannelsService channelsService;
+    private final AuthService authService;
 
-    public Message create(String accessEmail, NewMessageDto newMessageDto) {
-        User user = usersService.findByEmail(accessEmail);
+    public Message create(NewMessageDto newMessageDto) {
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         Channel channel = channelsService.findById(newMessageDto.getChannelId());
 
         if (!channel.getSpace().getMembers().contains(user))
@@ -43,8 +45,8 @@ public class MessagesService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found!"));
     }
 
-    public List<Message> findByChannel(String accessEmail, Long channelId) {
-        User user = usersService.findByEmail(accessEmail);
+    public List<Message> findByChannel(Long channelId) {
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         Channel channel = channelsService.findById(channelId);
 
         if (!channel.getSpace().getMembers().contains(user))

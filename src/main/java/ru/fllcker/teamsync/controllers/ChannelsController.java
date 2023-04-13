@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.channels.NewChannelDto;
 import ru.fllcker.teamsync.models.Channel;
-import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.channels.ChannelsService;
 
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("api/channels")
 public class ChannelsController {
-    private final AuthService authService;
     private final ChannelsService channelsService;
 
     @PostMapping
@@ -26,17 +24,19 @@ public class ChannelsController {
         if (bindingResult.hasErrors())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.getAllErrors().get(0).getDefaultMessage());
 
-        String accessEmail = authService.getAuthInfo().getEmail();
-
-        Channel channel = channelsService.create(accessEmail, newChannelDto);
+        Channel channel = channelsService.create(newChannelDto);
         return ResponseEntity.ok(channel);
     }
 
     @GetMapping("space/{spaceId}")
     public ResponseEntity<List<Channel>> findBySpace(@PathVariable Long spaceId) {
-        String accessEmail = authService.getAuthInfo().getEmail();
-
-        List<Channel> channels = channelsService.findBySpace(accessEmail, spaceId);
+        List<Channel> channels = channelsService.findBySpace(spaceId);
         return ResponseEntity.ok(channels);
+    }
+
+    @PatchMapping("category/{channelId}/{categoryId}")
+    public ResponseEntity<Channel> updateCategory(@PathVariable Long channelId, @PathVariable Long categoryId) {
+        Channel result = channelsService.updateCategory(channelId, categoryId);
+        return ResponseEntity.ok(result);
     }
 }

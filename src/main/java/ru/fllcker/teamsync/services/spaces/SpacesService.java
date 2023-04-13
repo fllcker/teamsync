@@ -9,6 +9,7 @@ import ru.fllcker.teamsync.dto.spaces.NewSpaceDto;
 import ru.fllcker.teamsync.models.Space;
 import ru.fllcker.teamsync.models.User;
 import ru.fllcker.teamsync.repositories.ISpacesRepository;
+import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
 import java.util.Collections;
@@ -20,11 +21,12 @@ import java.util.List;
 public class SpacesService {
     private final ISpacesRepository spacesRepository;
     private final UsersService usersService;
+    private final AuthService authService;
 
-    public Space create(String accessEmail, NewSpaceDto newSpaceDto) {
+    public Space create(NewSpaceDto newSpaceDto) {
         Space space = new Space(newSpaceDto.getTitle());
 
-        User owner = usersService.findByEmail(accessEmail);
+        User owner = usersService.findByEmail(authService.getAuthInfo().getEmail());
         space.setOwner(owner);
         space.setMembers(List.of(owner));
 
@@ -37,19 +39,18 @@ public class SpacesService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Space not found!"));
     }
 
-    public List<User> findMembers(String accessEmail, Long spaceId) {
+    public List<User> findMembers(Long spaceId) {
         Space space = this.findById(spaceId);
 
-        User user = usersService.findByEmail(accessEmail);
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         if (!space.getMembers().contains(user))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this space!");
 
         return space.getMembers();
     }
 
-    public List<Space> findByMember(String accessEmail) {
-        User user = usersService.findByEmail(accessEmail);
-
+    public List<Space> findByMember() {
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         return spacesRepository.findSpacesByMembersIn(Collections.singletonList(List.of(user)));
     }
 }
