@@ -6,19 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.channels.NewChannelDto;
-import ru.fllcker.teamsync.models.Category;
-import ru.fllcker.teamsync.models.Channel;
-import ru.fllcker.teamsync.models.Space;
-import ru.fllcker.teamsync.models.User;
+import ru.fllcker.teamsync.models.*;
 import ru.fllcker.teamsync.repositories.IChannelsRepository;
 import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.categories.CategoriesService;
 import ru.fllcker.teamsync.services.spaces.SpacesService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,5 +76,29 @@ public class ChannelsService {
         channelsRepository.updateCategoryById(category, channel.getId());
         channel.setCategory(category);
         return channel;
+    }
+
+    public static List<Channel> generateDefaultChannels() {
+        List<Channel> defaultChannels = new ArrayList<>();
+
+        Channel newsChannel = new Channel("news");
+        newsChannel.setMessages(List.of(new Message("Welcome! This is a special channel for space news!")));
+
+        Channel chatChannel = new Channel("chat-0");
+        chatChannel.setMessages(List.of(new Message("Welcome! This channel was created automatically.")));
+
+        Channel chatChannel2 = new Channel("chat-1");
+        chatChannel2.setMessages(List.of(new Message("Welcome! This channel was created automatically.")));
+
+        defaultChannels.add(newsChannel);
+        defaultChannels.add(chatChannel);
+        defaultChannels.add(chatChannel2);
+
+        return defaultChannels;
+    }
+
+    public Optional<Channel> getSpecialChannel(Long spaceId, String title) {
+        Space space = spacesService.findById(spaceId);
+        return channelsRepository.findByTitleAndSpace(title, space);
     }
 }
