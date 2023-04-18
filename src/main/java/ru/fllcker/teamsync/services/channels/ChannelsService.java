@@ -78,21 +78,24 @@ public class ChannelsService {
         return channel;
     }
 
-    public static List<Channel> generateDefaultChannels() {
+    public static List<Channel> generateDefaultChannels(Space space) {
         List<Channel> defaultChannels = new ArrayList<>();
 
         Channel newsChannel = new Channel("news");
-        newsChannel.setMessages(List.of(new Message("Welcome! This is a special channel for space news!")));
+        Message message1 = new Message("Welcome! This is a special channel for space news!");
+        message1.setChannel(newsChannel);
+        newsChannel.setMessages(List.of(message1));
+        newsChannel.setSpace(space);
 
         Channel chatChannel = new Channel("chat-0");
-        chatChannel.setMessages(List.of(new Message("Welcome! This channel was created automatically.")));
+        Message message2 = new Message("Welcome! This channel was created automatically.");
+        message2.setChannel(chatChannel);
+        chatChannel.setMessages(List.of(message2));
+        chatChannel.setSpace(space);
 
-        Channel chatChannel2 = new Channel("chat-1");
-        chatChannel2.setMessages(List.of(new Message("Welcome! This channel was created automatically.")));
 
         defaultChannels.add(newsChannel);
         defaultChannels.add(chatChannel);
-        defaultChannels.add(chatChannel2);
 
         return defaultChannels;
     }

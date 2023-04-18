@@ -29,7 +29,7 @@ public class SpacesService {
         User owner = usersService.findByEmail(authService.getAuthInfo().getEmail());
         space.setOwner(owner);
         space.setMembers(List.of(owner));
-        space.setChannels(ChannelsService.generateDefaultChannels());
+        space.setChannels(ChannelsService.generateDefaultChannels(space));
 
         spacesRepository.save(space);
         return space;

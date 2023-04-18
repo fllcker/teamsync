@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/swagger/**",
-                                        "/actuator/**").permitAll()
+                                        "/actuator/**",
+                                        "/api/info/ping").permitAll()
                                 .anyRequest().authenticated()
                                 .and()
                                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)

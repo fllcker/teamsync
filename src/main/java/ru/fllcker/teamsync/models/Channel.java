@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class Channel {
 
     @OneToMany(mappedBy = "channel")
     @JsonBackReference
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Message> messages;
 
 }
