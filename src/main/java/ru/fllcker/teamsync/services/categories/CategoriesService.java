@@ -14,6 +14,8 @@ import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.spaces.SpacesService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,5 +40,20 @@ public class CategoriesService {
     public Category findById(Long id) {
         return categoriesRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found!"));
+    }
+
+    public List<Category> findBySpace(Long spaceId) {
+        Space space = spacesService.findById(spaceId);
+        return categoriesRepository.findCategoriesBySpace(space);
+    }
+
+    public void deleteById(Long id) {
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
+        Category category = categoriesRepository.findById(id)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found!"));
+
+        if (!category.getSpace().getOwner().equals(user))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No access");
+        categoriesRepository.deleteById(category.getId());
     }
 }

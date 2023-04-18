@@ -51,6 +51,6 @@ public class SpacesService {
 
     public List<Space> findByMember() {
         User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
-        return spacesRepository.findSpacesByMembersIn(Collections.singletonList(List.of(user)));
+        return spacesRepository.findSpacesByMembersContaining(user);
     }
 }

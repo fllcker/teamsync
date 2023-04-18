@@ -16,7 +16,10 @@ import ru.fllcker.teamsync.services.categories.CategoriesService;
 import ru.fllcker.teamsync.services.spaces.SpacesService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,9 +38,6 @@ public class ChannelsService {
 
         if (!space.getOwner().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to control this space!");
-
-        if (space.getChannels().stream().anyMatch(c -> c.getTitle().equals(newChannelDto.getTitle())))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Channel with this name already exists!");
 
         Channel channel = new Channel(newChannelDto.getTitle());
         channel.setSpace(space);
@@ -59,6 +59,15 @@ public class ChannelsService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this space!");
 
         return channelsRepository.findChannelsBySpace(space);
+    }
+
+    public Map<Long, List<Channel>> findBySpaceAndGrouped(Long spaceId) {
+        List<Channel> channels = findBySpace(spaceId);
+
+        return channels.stream()
+                .collect(Collectors.groupingBy(
+                        channel -> channel.getCategory() != null ? channel.getCategory().getId() : -1L,
+                        Collectors.toList()));
     }
 
     public Channel updateCategory(Long channelId, Long categoryId) {

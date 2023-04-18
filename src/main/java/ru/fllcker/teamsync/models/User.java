@@ -54,4 +54,5 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @JsonBackReference
     private List<Message> messages;
+
 }

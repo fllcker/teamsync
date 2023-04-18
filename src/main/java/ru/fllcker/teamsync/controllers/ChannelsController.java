@@ -8,10 +8,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.channels.NewChannelDto;
+import ru.fllcker.teamsync.models.Category;
 import ru.fllcker.teamsync.models.Channel;
 import ru.fllcker.teamsync.services.channels.ChannelsService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +33,12 @@ public class ChannelsController {
     @GetMapping("space/{spaceId}")
     public ResponseEntity<List<Channel>> findBySpace(@PathVariable Long spaceId) {
         List<Channel> channels = channelsService.findBySpace(spaceId);
+        return ResponseEntity.ok(channels);
+    }
+
+    @GetMapping("space/{spaceId}/group/category")
+    public ResponseEntity<Map<Long, List<Channel>>> findBySpaceAndGrouped(@PathVariable Long spaceId) {
+        Map<Long, List<Channel>> channels = channelsService.findBySpaceAndGrouped(spaceId);
         return ResponseEntity.ok(channels);
     }
 

@@ -11,4 +11,8 @@ import java.util.List;
 @Repository
 public interface ISpacesRepository extends JpaRepository<Space, Long> {
     List<Space> findSpacesByMembersIn(Collection<List<User>> members);
+
+    List<Space> findSpacesByMembersContaining(User user);
+
+
 }
