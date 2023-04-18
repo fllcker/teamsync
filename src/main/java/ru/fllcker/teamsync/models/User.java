@@ -55,4 +55,8 @@ public class User {
     @JsonBackReference
     private List<Message> messages;
 
+    @OneToMany(mappedBy = "creator")
+    @JsonBackReference
+    private List<InviteCode> inviteCodes;
+
 }
