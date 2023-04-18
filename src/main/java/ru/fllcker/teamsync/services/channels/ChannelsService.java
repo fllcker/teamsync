@@ -6,19 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.channels.NewChannelDto;
-import ru.fllcker.teamsync.models.Category;
-import ru.fllcker.teamsync.models.Channel;
-import ru.fllcker.teamsync.models.Space;
-import ru.fllcker.teamsync.models.User;
+import ru.fllcker.teamsync.models.*;
 import ru.fllcker.teamsync.repositories.IChannelsRepository;
 import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.categories.CategoriesService;
 import ru.fllcker.teamsync.services.spaces.SpacesService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,5 +76,32 @@ public class ChannelsService {
         channelsRepository.updateCategoryById(category, channel.getId());
         channel.setCategory(category);
         return channel;
+    }
+
+    public static List<Channel> generateDefaultChannels(Space space) {
+        List<Channel> defaultChannels = new ArrayList<>();
+
+        Channel newsChannel = new Channel("news");
+        Message message1 = new Message("Welcome! This is a special channel for space news!");
+        message1.setChannel(newsChannel);
+        newsChannel.setMessages(List.of(message1));
+        newsChannel.setSpace(space);
+
+        Channel chatChannel = new Channel("chat-0");
+        Message message2 = new Message("Welcome! This channel was created automatically.");
+        message2.setChannel(chatChannel);
+        chatChannel.setMessages(List.of(message2));
+        chatChannel.setSpace(space);
+
+
+        defaultChannels.add(newsChannel);
+        defaultChannels.add(chatChannel);
+
+        return defaultChannels;
+    }
+
+    public Optional<Channel> getSpecialChannel(Long spaceId, String title) {
+        Space space = spacesService.findById(spaceId);
+        return channelsRepository.findByTitleAndSpace(title, space);
     }
 }

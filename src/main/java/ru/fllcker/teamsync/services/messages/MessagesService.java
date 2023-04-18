@@ -25,6 +25,10 @@ public class MessagesService {
     private final ChannelsService channelsService;
     private final AuthService authService;
 
+    public Message create(Message message) {
+        return messagesRepository.save(message);
+    }
+
     public Message create(NewMessageDto newMessageDto) {
         User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         Channel channel = channelsService.findById(newMessageDto.getChannelId());

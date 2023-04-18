@@ -10,9 +10,9 @@ import ru.fllcker.teamsync.models.Space;
 import ru.fllcker.teamsync.models.User;
 import ru.fllcker.teamsync.repositories.ISpacesRepository;
 import ru.fllcker.teamsync.services.auth.AuthService;
+import ru.fllcker.teamsync.services.channels.ChannelsService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,6 +29,7 @@ public class SpacesService {
         User owner = usersService.findByEmail(authService.getAuthInfo().getEmail());
         space.setOwner(owner);
         space.setMembers(List.of(owner));
+        space.setChannels(ChannelsService.generateDefaultChannels(space));
 
         spacesRepository.save(space);
         return space;
@@ -52,5 +53,11 @@ public class SpacesService {
     public List<Space> findByMember() {
         User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         return spacesRepository.findSpacesByMembersContaining(user);
+    }
+
+    public void addMember(Long spaceId, User user) {
+        Space space = findById(spaceId);
+        space.getMembers().add(user);
+        spacesRepository.save(space);
     }
 }

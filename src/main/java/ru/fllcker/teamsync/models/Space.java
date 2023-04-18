@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class Space {
     @Column(name = "title")
     private String title;
 
+    // Members of space
     @ManyToMany
     @JoinTable(
             name = "spaces_users",
@@ -30,16 +32,25 @@ public class Space {
     )
     private List<User> members;
 
+    // Owner of space
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @JsonManagedReference
     private User owner;
 
+    // Channels in space
     @OneToMany(mappedBy = "space")
     @JsonBackReference
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Channel> channels;
 
+    // Categories for channels
     @OneToMany(mappedBy = "space")
     @JsonBackReference
     private List<Category> categories;
+
+    // Invite codes for invite to space
+    @OneToMany(mappedBy = "space")
+    @JsonBackReference
+    private List<InviteCode> inviteCodes;
 }

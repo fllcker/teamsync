@@ -10,6 +10,7 @@ import ru.fllcker.teamsync.models.Channel;
 import ru.fllcker.teamsync.models.Space;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IChannelsRepository extends JpaRepository<Channel, Long> {
@@ -18,4 +19,5 @@ public interface IChannelsRepository extends JpaRepository<Channel, Long> {
     @Query("update Channel c set c.category = ?1 where c.id = ?2")
     void updateCategoryById(Category category, Long id);
     List<Channel> findChannelsBySpace(Space space);
+    Optional<Channel> findByTitleAndSpace(String title, Space space);
 }
