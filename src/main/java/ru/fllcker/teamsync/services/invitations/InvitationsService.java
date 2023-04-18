@@ -2,10 +2,12 @@ package ru.fllcker.teamsync.services.invitations;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.invitations.NewInviteCode;
+import ru.fllcker.teamsync.events.users.UserJoinedEvent;
 import ru.fllcker.teamsync.models.InviteCode;
 import ru.fllcker.teamsync.models.Space;
 import ru.fllcker.teamsync.models.User;
@@ -21,7 +23,9 @@ import java.time.LocalDateTime;
 @Transactional
 @RequiredArgsConstructor
 public class InvitationsService {
+    private final ApplicationEventPublisher eventPublisher;
     private final IInviteCodesRepository inviteCodesRepository;
+
     private final AuthService authService;
     private final UsersService usersService;
     private final SpacesService spacesService;
@@ -64,6 +68,7 @@ public class InvitationsService {
         inviteCodesRepository.updateActivationsLeftById(inviteCode.getActivationsLeft() - 1, inviteCode.getId());
 
         spacesService.addMember(inviteCode.getSpace().getId(), user);
+        eventPublisher.publishEvent(new UserJoinedEvent(user, inviteCode.getSpace()));
         return inviteCode;
     }
 
