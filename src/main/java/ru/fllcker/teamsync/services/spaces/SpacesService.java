@@ -12,7 +12,6 @@ import ru.fllcker.teamsync.repositories.ISpacesRepository;
 import ru.fllcker.teamsync.services.auth.AuthService;
 import ru.fllcker.teamsync.services.users.UsersService;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -52,5 +51,11 @@ public class SpacesService {
     public List<Space> findByMember() {
         User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         return spacesRepository.findSpacesByMembersContaining(user);
+    }
+
+    public void addMember(Long spaceId, User user) {
+        Space space = findById(spaceId);
+        space.getMembers().add(user);
+        spacesRepository.save(space);
     }
 }

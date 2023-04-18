@@ -46,4 +46,29 @@ public class InvitationsService {
         inviteCodesRepository.save(inviteCode);
         return inviteCode;
     }
+
+    public InviteCode activate(String value) {
+        InviteCode inviteCode = findByValue(value);
+
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
+
+        if (inviteCode.getActivationsLeft() <= 0)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Number of activations exceeded!");
+
+        if (inviteCode.getExpirationTime().isBefore(LocalDateTime.now()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code is not valid!");
+
+        if (inviteCode.getSpace().getMembers().contains(user))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are already in this space!");
+
+        inviteCodesRepository.updateActivationsLeftById(inviteCode.getActivationsLeft() - 1, inviteCode.getId());
+
+        spacesService.addMember(inviteCode.getSpace().getId(), user);
+        return inviteCode;
+    }
+
+    public InviteCode findByValue(String value) {
+        return inviteCodesRepository.findByValue(value)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Code not valid or not found"));
+    }
 }
