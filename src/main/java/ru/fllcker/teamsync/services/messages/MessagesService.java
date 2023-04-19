@@ -2,10 +2,12 @@ package ru.fllcker.teamsync.services.messages;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.messages.NewMessageDto;
+import ru.fllcker.teamsync.events.messages.MessageCreatedEvent;
 import ru.fllcker.teamsync.models.Channel;
 import ru.fllcker.teamsync.models.Message;
 import ru.fllcker.teamsync.models.User;
@@ -20,6 +22,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class MessagesService {
+    private final ApplicationEventPublisher eventPublisher;
     private final IMessagesRepository messagesRepository;
     private final UsersService usersService;
     private final ChannelsService channelsService;
@@ -40,6 +43,8 @@ public class MessagesService {
         message.setChannel(channel);
         message.setOwner(user);
         messagesRepository.save(message);
+
+        eventPublisher.publishEvent(new MessageCreatedEvent(message));
 
         return message;
     }

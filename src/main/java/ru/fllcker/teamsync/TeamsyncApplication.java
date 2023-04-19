@@ -29,7 +29,6 @@ public class TeamsyncApplication {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**");
-                registry.addMapping("**/**");
             }
         };
     }
