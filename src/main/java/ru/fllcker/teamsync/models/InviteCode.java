@@ -18,6 +18,8 @@ public class InviteCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @NonNull
     private String value;
 
