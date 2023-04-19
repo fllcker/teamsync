@@ -2,10 +2,15 @@ package ru.fllcker.teamsync.services.messages;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fllcker.teamsync.dto.messages.NewMessageDto;
+import ru.fllcker.teamsync.events.messages.MessageCreatedEvent;
 import ru.fllcker.teamsync.models.Channel;
 import ru.fllcker.teamsync.models.Message;
 import ru.fllcker.teamsync.models.User;
@@ -20,6 +25,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class MessagesService {
+    private final ApplicationEventPublisher eventPublisher;
     private final IMessagesRepository messagesRepository;
     private final UsersService usersService;
     private final ChannelsService channelsService;
@@ -41,6 +47,8 @@ public class MessagesService {
         message.setOwner(user);
         messagesRepository.save(message);
 
+        eventPublisher.publishEvent(new MessageCreatedEvent(message));
+
         return message;
     }
 
@@ -49,6 +57,7 @@ public class MessagesService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found!"));
     }
 
+    @Deprecated
     public List<Message> findByChannel(Long channelId) {
         User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
         Channel channel = channelsService.findById(channelId);
@@ -57,5 +66,15 @@ public class MessagesService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this space!");
 
         return messagesRepository.findMessagesByChannel(channel);
+    }
+
+    public Page<Message> findByChannel(Long channelId, Integer offset, Integer limit) {
+        User user = usersService.findByEmail(authService.getAuthInfo().getEmail());
+        Channel channel = channelsService.findById(channelId);
+
+        if (!channel.getSpace().getMembers().contains(user))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this space!");
+
+        return messagesRepository.findMessagesByChannel(channel, PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "id")));
     }
 }

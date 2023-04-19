@@ -32,7 +32,8 @@ public class SecurityConfig {
                                         "/api/auth/**",
                                         "/swagger/**",
                                         "/actuator/**",
-                                        "/api/info/ping").permitAll()
+                                        "/api/info/ping",
+                                        "/ws/**").permitAll()
                                 .anyRequest().authenticated()
                                 .and()
                                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -43,5 +44,6 @@ public class SecurityConfig {
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
 
